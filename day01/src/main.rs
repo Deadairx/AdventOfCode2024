@@ -21,13 +21,16 @@ fn main() -> io::Result<()> {
 
     column1.sort();
     column2.sort();
-    let mut total_sum = 0;
 
-    for (n1, n2) in column1.iter().zip(column2.iter()) {
-        total_sum += (n1 - n2).abs();
+    let mut sum = 0;
+
+    for &n1 in &column1 {
+        let count: i32 = column2.iter().filter(|&&n2| n2 == n1).count().try_into().unwrap();
+
+        sum += n1 * count;
     }
 
-    println!("Total sum of differences: {}", total_sum);
+    println!("{}", sum);
 
     Ok(())
 }
