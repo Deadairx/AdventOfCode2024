@@ -50,6 +50,47 @@ fn main() -> io::Result<()> {
             }
         }
 
+        if !safe {
+            for i in 0..array.len() {
+                let mut temp_array = array.clone();
+                temp_array.remove(i);
+
+                let mut temp_dec = false;
+                let mut temp_inc = false;
+                let mut temp_safe = true;
+
+                if let Some(first) = temp_array.first() {
+                    let mut previous = *first;
+                    for &num in temp_array.iter().skip(1) {
+                        if num > previous {
+                            temp_inc = true;
+                            if num - previous > 3 {
+                                temp_safe = false;
+                            }
+                        } else if num < previous {
+                            temp_dec = true;
+                            if previous - num > 3 {
+                                temp_safe = false;
+                            }
+                        } else if num == previous {
+                            temp_safe = false;
+                        }
+
+                        if temp_inc && temp_dec {
+                            temp_safe = false;
+                        }
+
+                        previous = num;
+                    }
+                }
+
+                if temp_safe {
+                    safe = true;
+                    break;
+                }
+            }
+        }
+
         if safe {
             count += 1;
         }
