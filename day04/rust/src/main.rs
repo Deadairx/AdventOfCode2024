@@ -39,46 +39,49 @@ fn main() {
         char_map: &HashMap<usize, HashMap<usize, char>>,
         start_row: usize,
         start_col: usize,
-        d_row: isize,
-        d_col: isize,
     ) -> bool {
-        let sequence = ['M', 'A', 'S'];
-        let mut current_row = start_row;
-        let mut current_col = start_col;
+        let sequence = [(-1, -1), (-1, 1)];
 
-        for &ch in &sequence {
-            current_row = (current_row as isize + d_row) as usize;
-            current_col = (current_col as isize + d_col) as usize;
+        let mut cross_count = 0;
+
+        for (d_row, d_col) in &sequence {
+            let current_row = (start_row as isize + d_row) as usize;
+            let current_col = (start_col as isize + d_col) as usize;
+            let opposite_row = (start_row as isize - d_row) as usize;
+            let opposite_col = (start_col as isize - d_col) as usize;
 
             if let Some(row_map) = char_map.get(&current_row) {
                 if let Some(&c) = row_map.get(&current_col) {
-                    if c != ch {
-                        return false;
+                    if c == 'M' {
+                        if let Some(row_map2) = char_map.get(&opposite_row) {
+                            if let Some(&c2) = row_map2.get(&opposite_col) {
+                                if c2 == 'S' {
+                                    cross_count += 1
+                                }
+                            }
+                        }
                     }
-                } else {
-                    return false;
+                    if c == 'S' {
+                        if let Some(row_map2) = char_map.get(&opposite_row) {
+                            if let Some(&c2) = row_map2.get(&opposite_col) {
+                                if c2 == 'M' {
+                                    cross_count += 1
+                                }
+                            }
+                        }
+                    }
                 }
-            } else {
-                return false;
             }
         }
-        true
+
+        cross_count == 2
     }
 
     for (row, row_map) in &char_map {
         for (col, c) in row_map {
-            if *c == 'X' {
-                // Check all 8 surrounding positions
-                for d_row in -1..=1 {
-                    for d_col in -1..=1 {
-                        if d_row == 0 && d_col == 0 {
-                            continue; // Skip the current position
-                        }
-
-                        if check_sequence(&char_map, *row, *col, d_row, d_col) {
-                            count += 1;
-                        }
-                    }
+            if *c == 'A' {
+                if check_sequence(&char_map, *row, *col) {
+                    count += 1;
                 }
             }
         }
