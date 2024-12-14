@@ -44,33 +44,34 @@ fn main() {
 
         let mut cross_count = 0;
 
+        fn matches_target(
+            char_map: &HashMap<usize, HashMap<usize, char>>,
+            row: usize,
+            col: usize,
+            target: char,
+        ) -> bool {
+            if let Some(row_map) = char_map.get(&row) {
+                if let Some(&c) = row_map.get(&col) {
+                    return c == target;
+                }
+            }
+            false
+        }
+
         for (d_row, d_col) in &sequence {
             let current_row = (start_row as isize + d_row) as usize;
             let current_col = (start_col as isize + d_col) as usize;
             let opposite_row = (start_row as isize - d_row) as usize;
             let opposite_col = (start_col as isize - d_col) as usize;
 
-            if let Some(row_map) = char_map.get(&current_row) {
-                if let Some(&c) = row_map.get(&current_col) {
-                    if c == 'M' {
-                        if let Some(row_map2) = char_map.get(&opposite_row) {
-                            if let Some(&c2) = row_map2.get(&opposite_col) {
-                                if c2 == 'S' {
-                                    cross_count += 1
-                                }
-                            }
-                        }
-                    }
-                    if c == 'S' {
-                        if let Some(row_map2) = char_map.get(&opposite_row) {
-                            if let Some(&c2) = row_map2.get(&opposite_col) {
-                                if c2 == 'M' {
-                                    cross_count += 1
-                                }
-                            }
-                        }
-                    }
-                }
+            if matches_target(char_map, current_row, current_col, 'M') 
+                && matches_target(char_map, opposite_row, opposite_col, 'S') {
+                cross_count += 1;
+            }
+
+            if matches_target(char_map, current_row, current_col, 'S') 
+                && matches_target(char_map, opposite_row, opposite_col, 'M') {
+                cross_count += 1;
             }
         }
 
