@@ -35,6 +35,36 @@ fn main() {
 
     let mut count = 0;
 
+    fn check_sequence(
+        char_map: &HashMap<usize, HashMap<usize, char>>,
+        start_row: usize,
+        start_col: usize,
+        d_row: isize,
+        d_col: isize,
+    ) -> bool {
+        let sequence = ['M', 'A', 'S'];
+        let mut current_row = start_row;
+        let mut current_col = start_col;
+
+        for &ch in &sequence {
+            current_row = (current_row as isize + d_row) as usize;
+            current_col = (current_col as isize + d_col) as usize;
+
+            if let Some(row_map) = char_map.get(&current_row) {
+                if let Some(&c) = row_map.get(&current_col) {
+                    if c != ch {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        true
+    }
+
     for (row, row_map) in &char_map {
         for (col, c) in row_map {
             if *c == 'X' {
@@ -45,31 +75,8 @@ fn main() {
                             continue; // Skip the current position
                         }
 
-                        let neighbor_row = (*row as isize + d_row) as usize;
-                        let neighbor_col = (*col as isize + d_col) as usize;
-
-                        if let Some(neighbor_row_map) = char_map.get(&neighbor_row) {
-                            if let Some(&neighbor_c) = neighbor_row_map.get(&neighbor_col) {
-                                if neighbor_c== 'M' {
-                                    let neighbor_row2 = (neighbor_row as isize + d_row) as usize;
-                                    let neighbor_col2 = (neighbor_col as isize + d_col) as usize;
-                                    if let Some(neighbor_row_map2) = char_map.get(&neighbor_row2) {
-                                        if let Some(&neighbor_c2) = neighbor_row_map2.get(&neighbor_col2) {
-                                            if neighbor_c2== 'A'{
-                                                let neighbor_row3 = (neighbor_row2 as isize + d_row) as usize;
-                                                let neighbor_col3 = (neighbor_col2 as isize + d_col) as usize;
-                                                if let Some(neighbor_row_map3) = char_map.get(&neighbor_row3) {
-                                                    if let Some(&neighbor_c3) = neighbor_row_map3.get(&neighbor_col3) {
-                                                        if neighbor_c3== 'S'{
-                                                            count += 1;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                        if check_sequence(&char_map, *row, *col, d_row, d_col) {
+                            count += 1;
                         }
                     }
                 }
