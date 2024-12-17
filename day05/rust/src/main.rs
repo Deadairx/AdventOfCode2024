@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::env;
 use std::fs;
-use std::hash::Hash;
 use std::vec;
 
 fn main() {
@@ -49,12 +48,11 @@ fn parse_rules(raw_rules: &str) -> HashMap<usize, Vec<usize>> {
         };
 
         let values: Vec<usize> = parts[1]
-            .trim()
             .split_whitespace()
             .filter_map(|s| s.parse().ok())
             .collect();
 
-        rules.entry(key).or_insert_with(Vec::new).extend(values);
+        rules.entry(key).or_default().extend(values);
     }
 
     rules
@@ -67,7 +65,7 @@ fn is_valid(input: &Vec<usize>, rules: &HashMap<usize, Vec<usize>>) -> bool {
 
     for num in input {
         let bad_vec = Vec::<usize>::new();
-        let bad = rules.get(&num).unwrap_or(&bad_vec);
+        let bad = rules.get(num).unwrap_or(&bad_vec);
 
         if prev.iter().any(|p| bad.contains(p)) {
             valid = false;
@@ -93,7 +91,10 @@ fn process_part1(contents: String) {
     let mut sum = 0;
 
     for line in part2.lines() {
-        let parsed_line: Vec<usize> = line.split(',').filter_map(|s| s.trim().parse::<usize>().ok()).collect();
+        let parsed_line: Vec<usize> = line
+            .split(',')
+            .filter_map(|s| s.trim().parse::<usize>().ok())
+            .collect();
 
         let valid = is_valid(&parsed_line, &rules);
 
@@ -119,7 +120,10 @@ fn process_part2(contents: String) {
     let mut sum = 0;
 
     for line in part2.lines() {
-        let parsed_line: Vec<usize> = line.split(',').filter_map(|s| s.trim().parse::<usize>().ok()).collect();
+        let parsed_line: Vec<usize> = line
+            .split(',')
+            .filter_map(|s| s.trim().parse::<usize>().ok())
+            .collect();
 
         let valid = is_valid(&parsed_line, &rules);
 
@@ -135,7 +139,6 @@ fn process_part2(contents: String) {
 
 fn make_valid(mut parsed_line: Vec<usize>, rules: &HashMap<usize, Vec<usize>>) -> Vec<usize> {
     let mut valid = false;
-    let mut fix_count = 0;
 
     // println!("Fixing: {:?}", parsed_line);
 
@@ -147,7 +150,8 @@ fn make_valid(mut parsed_line: Vec<usize>, rules: &HashMap<usize, Vec<usize>>) -
             let bad_vec = Vec::<usize>::new();
             let bad = rules.get(&num).unwrap_or(&bad_vec);
 
-            if let Some((index, problem)) = prev.iter().enumerate().find(|(_, p)| bad.contains(*p)) {
+            if let Some((index, problem)) = prev.iter().enumerate().find(|(_, p)| bad.contains(*p))
+            {
                 parsed_line.remove(index);
                 parsed_line.push(*problem);
                 break;
@@ -157,11 +161,7 @@ fn make_valid(mut parsed_line: Vec<usize>, rules: &HashMap<usize, Vec<usize>>) -
         }
 
         valid = is_valid(&parsed_line, rules);
-        fix_count += 1;
     }
-
-    // println!("Fixed: {:?}", parsed_line);
-    // println!("Fix count: {}", fix_count);
 
     parsed_line
 }
@@ -170,4 +170,3 @@ fn get_mid(vec: Vec<usize>) -> usize {
     let mid = vec.len() / 2;
     vec[mid]
 }
-
