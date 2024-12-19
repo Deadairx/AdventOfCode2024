@@ -1,0 +1,8 @@
++++Example+++
+part 1: 11
+part 2: 31
+
++++Input+++
+part 1: 1341714
+part 2: 27384707
+
